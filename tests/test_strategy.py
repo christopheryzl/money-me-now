@@ -1,3 +1,4 @@
+from signal import signal
 import pandas as pd
 import pytest
 
@@ -16,12 +17,14 @@ def test_generate_signal_buy_when_oversold():
     closes = [100.0] * 19 + [80.0]
     signal = generate_signal(_make_df(closes), MeanReversionParams(window=20, entry_z=2.0))
     assert signal == Signal.BUY
+    print(signal)
 
 
 def test_generate_signal_sell_when_overbought():
     closes = [100.0] * 19 + [130.0]
     signal = generate_signal(_make_df(closes), MeanReversionParams(window=20, entry_z=2.0))
     assert signal == Signal.SELL
+    print(signal)
 
 
 def test_generate_signal_hold_when_within_bands():
