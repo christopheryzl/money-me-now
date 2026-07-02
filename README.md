@@ -1,3 +1,100 @@
+# money-me-now
+
+A practice project for building a quantitative trading bot in Python 3.12.
+
+## Setup
+
+```
+py -3.12 -m venv .venv
+.venv\Scripts\Activate.ps1   # Windows PowerShell
+# source .venv/bin/activate  # macOS/Linux
+
+pip install -e ".[dev]"
+```
+
+## Project Structure
+
+```
+src/bot/
+  config.py    - watchlist and strategy parameters
+  data.py      - market data fetching (yfinance)
+  strategy.py  - signal generation logic
+  scanner.py   - CLI entry point
+tests/         - unit tests
+```
+
+## Usage
+
+Scan the default watchlist symbol for a signal:
+
+```
+python -m bot.scanner --symbol AAPL
+```
+
+Prints the current signal, z-score, and closing price, e.g. `AAPL: signal=HOLD zscore=1.49 close=307.66`.
+
+## Running Tests
+
+```
+pytest
+```
+
+## Strategy: Bollinger Band Z-Score Mean Reversion
+
+The initial model (`bot.strategy`) is a **mean reversion** strategy: it tracks
+a rolling 20-day mean and standard deviation of closing price, converts the
+latest close into a z-score, and signals **BUY** when price is 2+ standard
+deviations below the mean (oversold) or **SELL** when 2+ standard deviations
+above (overbought).
+
+**Why this model first:**
+- It only needs OHLCV price data — no fundamentals, no alternative data, no
+  broker integration — so it's the smallest possible end-to-end pipeline
+  (fetch → compute → signal) to get right before adding complexity.
+- Z-score thresholds are simple, interpretable, and easy to unit test, which
+  matters more than edge when the goal is learning the plumbing.
+- It introduces the building blocks (rolling statistics, a `Signal` enum,
+  configurable parameters) that later, more sophisticated models can reuse.
+
+The default instrument is **AAPL**: a highly liquid NASDAQ mega-cap with
+tight spreads and deep volume, which keeps price action closer to "signal"
+and reduces the microstructure noise (wide spreads, thin books) that would
+confound this model on a smaller/illiquid name. The watchlist is
+configurable in `src/bot/config.py`.
+
+**Disclaimer:** this is an educational exercise, not investment advice. Any
+signal produced here has not been backtested or risk-managed — do not trade
+on it.
+
+## Roadmap / Known Gaps
+
+This is a signal scanner only. Notably missing before this could touch real
+(or even paper) money:
+
+- **Execution/broker integration** — no order placement or paper-trading
+  connection (e.g. Alpaca, Interactive Brokers).
+- **Backtesting** — the strategy only evaluates the latest bar; there's no
+  historical simulation to validate edge before trusting a signal.
+- **Risk management** — no position sizing, stop-loss/take-profit, or
+  portfolio-level exposure limits.
+- **Secrets management** — no `.env` / `python-dotenv` pattern yet for the
+  API keys a broker integration will need (`.env` is gitignored, but there's
+  no `.env.example` template).
+- **Scheduling & market calendar awareness** — nothing runs the scanner
+  periodically, and it doesn't check NASDAQ trading hours/holidays or
+  timezones.
+- **Logging & alerting** — signals only print to stdout; no structured logs
+  or notification channel (email/Slack/webhook).
+- **CI pipeline** — no GitHub Actions workflow running tests/linting on
+  push/PR.
+- **Linting/formatting** — no ruff/black/mypy configured.
+- **Data persistence** — signals aren't stored, so there's no way to review
+  history or measure live accuracy over time.
+- **Broader test coverage** — only the strategy math is unit tested; no
+  tests for data-fetch failures, retries, or malformed responses.
+
+---
+
 # Git Best Practices
 
 A quick reference for working effectively with Git on this repository.
