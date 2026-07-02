@@ -27,3 +27,4 @@ data/
 
 # Local tooling config
 .claude/
+.vscode/
