@@ -1,0 +1,30 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python bytecode / cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Packaging
+*.egg-info/
+dist/
+build/
+
+# Secrets / environment config
+.env
+.env.*
+!.env.example
+
+# Local data / logs
+data/
+*.log
+
+# Local tooling config
+.claude/
+.vscode/
