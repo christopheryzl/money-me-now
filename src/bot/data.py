@@ -12,8 +12,8 @@ def get_daily_bars(symbol: str, period: str = "6mo") -> pd.DataFrame:
     if df.empty:
         raise ValueError(f"No data returned for symbol '{symbol}'")
     if isinstance(df.columns, pd.MultiIndex):
-        # yfinance returns a (Price, Ticker) MultiIndex even for a single
-        # symbol; drop the ticker level since we only ever fetch one.
         df.columns = df.columns.droplevel("Ticker")
+    if "Close" not in df:
+        raise ValueError(f"No Close column returned for symbol '{symbol}'")
     df.index.name = "date"
     return df

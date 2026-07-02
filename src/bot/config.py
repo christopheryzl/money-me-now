@@ -1,10 +1,19 @@
-"""Static configuration for the initial scanner feature."""
+"""Static configuration for the scanner."""
 
-# Symbols the scanner will look at. Start with one liquid, high-volume
-# NASDAQ name to keep the pipeline simple; extend this list once the
-# scanner, backtest, and risk layers are proven out.
-WATCHLIST = ["AAPL"]
+WATCHLIST = ["AAPL", "MSFT", "NVDA"]
 
-# Mean reversion parameters (see bot.strategy for the model itself).
-LOOKBACK_WINDOW = 20
-ENTRY_ZSCORE = 2.0
+DEFAULT_PERIOD = "6mo"
+DEFAULT_STRATEGIES = ["mean-reversion", "rsi-reversal", "moving-average-trend"]
+
+MEAN_REVERSION_WINDOW = 20
+MEAN_REVERSION_ENTRY_Z = 2.0
+
+RSI_WINDOW = 14
+RSI_OVERSOLD = 30.0
+RSI_OVERBOUGHT = 70.0
+
+TREND_FAST_WINDOW = 20
+TREND_SLOW_WINDOW = 50
+
+ACCOUNT_EQUITY = 10_000.0
+RISK_PER_TRADE = 0.01

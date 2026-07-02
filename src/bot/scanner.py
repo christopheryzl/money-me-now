@@ -1,29 +1,39 @@
-"""CLI entry point: scan a single NASDAQ instrument for a mean-reversion signal."""
+"""CLI entry point for scanning configured instruments."""
 
 from __future__ import annotations
 
 import argparse
 
-from . import config
-from .data import get_daily_bars
-from .strategy import MeanReversionParams, compute_zscore, generate_signal
+from bot import config
+from bot.alerts import format_signal
+from bot.data import get_daily_bars
+from bot.strategies import get_strategies
 
 
-def scan(symbol: str) -> None:
-    df = get_daily_bars(symbol)
-    params = MeanReversionParams(window=config.LOOKBACK_WINDOW, entry_z=config.ENTRY_ZSCORE)
-    signal = generate_signal(df, params)
-    zscore = compute_zscore(df["Close"], params.window).dropna().iloc[-1]
-    close = df["Close"].iloc[-1]
-
-    print(f"{symbol}: signal={signal.value} zscore={zscore:.2f} close={close:.2f}")
+def scan_symbol(symbol: str, strategy_name: str = "all", period: str = config.DEFAULT_PERIOD) -> list[str]:
+    df = get_daily_bars(symbol, period=period)
+    lines: list[str] = []
+    for strategy in get_strategies(strategy_name):
+        result = strategy.evaluate(symbol, df)
+        lines.append(format_signal(result))
+    return lines
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Scan a NASDAQ instrument for a mean-reversion signal.")
-    parser.add_argument("--symbol", default=config.WATCHLIST[0], help="Ticker symbol to scan")
+    parser = argparse.ArgumentParser(description="Scan instruments for trading signals.")
+    parser.add_argument("--symbol", action="append", help="Ticker symbol to scan; repeatable")
+    parser.add_argument(
+        "--strategy",
+        default="all",
+        help="Strategy to run: all, mean-reversion, rsi-reversal, moving-average-trend",
+    )
+    parser.add_argument("--period", default=config.DEFAULT_PERIOD, help="yfinance lookback period")
     args = parser.parse_args()
-    scan(args.symbol)
+
+    symbols = args.symbol or config.WATCHLIST
+    for symbol in symbols:
+        for line in scan_symbol(symbol, args.strategy, args.period):
+            print(line)
 
 
 if __name__ == "__main__":
