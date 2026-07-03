@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from bot import config
 from bot.strategies.base import Strategy
+from bot.strategies.donchian_breakout import DonchianBreakoutStrategy
+from bot.strategies.macd_momentum import MacdMomentumStrategy
 from bot.strategies.mean_reversion import MeanReversionStrategy
 from bot.strategies.moving_average import MovingAverageTrendStrategy
 from bot.strategies.rsi_reversal import RsiReversalStrategy
@@ -14,6 +16,12 @@ def default_strategies() -> list[Strategy]:
         MeanReversionStrategy(config.MEAN_REVERSION_WINDOW, config.MEAN_REVERSION_ENTRY_Z),
         RsiReversalStrategy(config.RSI_WINDOW, config.RSI_OVERSOLD, config.RSI_OVERBOUGHT),
         MovingAverageTrendStrategy(config.TREND_FAST_WINDOW, config.TREND_SLOW_WINDOW),
+        MacdMomentumStrategy(
+            config.MACD_FAST_WINDOW,
+            config.MACD_SLOW_WINDOW,
+            config.MACD_SIGNAL_WINDOW,
+        ),
+        DonchianBreakoutStrategy(config.DONCHIAN_WINDOW),
     ]
 
 

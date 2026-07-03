@@ -11,6 +11,14 @@ class Signal(str, Enum):
     SELL = "SELL"
     HOLD = "HOLD"
 
+    @property
+    def direction(self) -> int:
+        if self == Signal.BUY:
+            return 1
+        if self == Signal.SELL:
+            return -1
+        return 0
+
 
 @dataclass(frozen=True)
 class SignalResult:

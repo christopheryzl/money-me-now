@@ -6,6 +6,8 @@ from bot.strategy import MeanReversionParams, generate_signal
 from bot.strategies.mean_reversion import MeanReversionStrategy
 from bot.strategies.moving_average import MovingAverageTrendStrategy
 from bot.strategies.rsi_reversal import RsiReversalStrategy
+from bot.strategies.macd_momentum import MacdMomentumStrategy
+from bot.strategies.donchian_breakout import DonchianBreakoutStrategy
 
 
 def _make_df(closes: list[float]) -> pd.DataFrame:
@@ -86,3 +88,24 @@ def test_moving_average_trend_buy_when_fast_average_above_slow_average():
 def test_moving_average_trend_rejects_invalid_windows():
     with pytest.raises(ValueError, match="fast_window"):
         MovingAverageTrendStrategy(fast_window=5, slow_window=5)
+
+
+def test_macd_momentum_signals_on_uptrend():
+    df = _make_df([float(value) for value in range(1, 50)])
+    result = MacdMomentumStrategy(fast_window=3, slow_window=6, signal_window=3).evaluate(
+        "AAPL",
+        df,
+    )
+    assert result.signal == Signal.BUY
+
+
+def test_donchian_breakout_buy_when_price_breaks_prior_high():
+    df = pd.DataFrame(
+        {
+            "High": [10.0, 11.0, 12.0, 13.0, 14.0],
+            "Low": [8.0, 9.0, 10.0, 11.0, 12.0],
+            "Close": [9.0, 10.0, 11.0, 12.0, 15.0],
+        },
+    )
+    result = DonchianBreakoutStrategy(window=3).evaluate("AAPL", df)
+    assert result.signal == Signal.BUY

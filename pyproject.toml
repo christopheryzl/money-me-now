@@ -21,6 +21,7 @@ dev = [
 
 [project.scripts]
 scan = "bot.scanner:main"
+export-dashboard = "bot.dashboard_export:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>money-me-now dashboard</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar">
+        <div>
+          <h1>money-me-now</h1>
+          <p id="summary">Loading ensemble...</p>
+        </div>
+        <div class="scorebox">
+          <span id="globalSignal">HOLD</span>
+          <strong id="globalScore">0.00</strong>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="chart-panel">
+          <div id="chart"></div>
+        </div>
+        <aside class="side-panel">
+          <h2>Strategy Weights</h2>
+          <div id="votes" class="votes"></div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

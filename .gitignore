@@ -23,6 +23,7 @@ build/
 
 # Local data / logs
 data/
+dashboard/data/*.json
 *.log
 
 # Local tooling config
